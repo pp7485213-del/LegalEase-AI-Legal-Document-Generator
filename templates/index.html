@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LegalEase — Simple document drafts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="top"><a class="brand" href="/">⚖ LegalEase</a><span>Simple legal document drafts</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">DOCUMENT GENERATOR</p><h1>Start with a clear first draft.</h1><p>Choose a document, enter the details, and get a draft you can review and edit.</p></section>
+    <section class="card">
+      <form method="post" id="generator">
+        <label for="document">What do you need?</label>
+        <select id="document" name="document" onchange="this.form.submit()">
+          {% for key, doc in documents.items() %}<option value="{{ key }}" {% if selected == key %}selected{% endif %}>{{ doc.name }}</option>{% endfor %}
+        </select>
+        <div class="fields">
+          {% for key, label in documents[selected].fields %}
+            <label>{{ label }}<input name="{{ key }}" value="{{ values.get(key, '') }}" required></label>
+          {% endfor %}
+        </div>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        <button type="submit">Generate draft <span>→</span></button>
+      </form>
+    </section>
+    {% if output %}
+    <section class="result"><div class="result-head"><div><p class="eyebrow">YOUR DRAFT</p><h2>{{ documents[selected].name }}</h2></div><form method="post" action="/download">{% for name, value in request.form.items() %}<input type="hidden" name="{{ name }}" value="{{ value }}">{% endfor %}<button class="secondary">Download .txt</button></form></div><pre>{{ output }}</pre><button class="secondary" onclick="window.print()">Print / Save as PDF</button></section>
+    {% endif %}
+    <aside>⚠ <span><strong>Review before use.</strong> This tool creates general drafts for demonstration and does not provide legal advice. Laws and required wording vary. Have a qualified professional review important documents.</span></aside>
+  </main>
+  <footer>LegalEase · Student project demo</footer>
+</body></html>
